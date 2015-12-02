@@ -6,7 +6,7 @@
   template: owner=root group=root src=nginx.conf.j2 dest=/etc/docker-registry/auth/nginx.conf
     
 - name: build /etc/docker-registry/auth/nginx.htpasswd
-  shell: docker run --entrypoint htpasswd httpd:2.4 -bn arothste password > /etc/docker-registry/auth/nginx.htpasswd
+  shell: docker run --rm --entrypoint htpasswd httpd:2.4 -bn arothste password > /etc/docker-registry/auth/nginx.htpasswd
   args:
     creates: /etc/docker-registry/auth/nginx.htpasswd
 
