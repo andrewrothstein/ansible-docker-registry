@@ -1,9 +1,17 @@
 ---
 - name: mkdir -p /etc/docker-registry/auth
-  file: dest=/etc/docker-registry/auth owner=root group=root state=directory
+  file: >
+    state=directory
+    dest=/etc/docker-registry/auth
+    owner=root
+    group=root
 
 - name: build /etc/docker-registry/auth/nginx.conf
-  template: owner=root group=root src=nginx.conf.j2 dest=/etc/docker-registry/auth/nginx.conf
+  template: >
+    src=nginx.conf.j2
+    dest=/etc/docker-registry/auth/nginx.conf
+    owner=root
+    group=root
     
 - name: build /etc/docker-registry/auth/nginx.htpasswd
   shell: docker run --rm --entrypoint htpasswd httpd:2.4 -bn arothste password > /etc/docker-registry/auth/nginx.htpasswd
@@ -12,7 +20,8 @@
 
 - name : launching docker registry (backend)...
   docker :
-    state: restarted
+    state: started
+    restart_policy: always
     name: registry
     image: 'registry:2'
     ports:
@@ -20,7 +29,8 @@
 
 - name : launching docker registry (frontend)...
   docker :
-    state: restarted
+    state: started
+    restart_policy: always
     name: registry-frontend
     image: 'nginx:1.9'
     ports:
