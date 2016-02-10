@@ -1,0 +1,7 @@
+---
+docker_registry_conf_dir: /etc/docker-registry
+docker_registry_users:
+  - uid: 'arothste'
+    pwd: 'password'
+  - uid: 'mturok'
+    pwd: 'password'
