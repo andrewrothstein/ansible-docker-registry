@@ -13,6 +13,10 @@
     owner=root
     group=root
     
+- name: create /etc/docker-registry/auth/nginx.htpasswd
+  command: >
+    touch {{docker_registry_conf_dir}}/auth/nginx.htpasswd
+
 - name: build /etc/docker-registry/auth/nginx.htpasswd
   command: >
     docker run
@@ -23,6 +27,15 @@
     -b {{docker_registry_conf_dir}}/auth/nginx.htpasswd {{item.uid}} {{item.pwd}}
   with_items: docker_registry_users
 
+- name : check if registry volume exists
+  command: docker inspect registry-volume
+  register: registry_volume_exists
+  failed_when: false
+
+- name : create registry volume if it does not exist
+  command: docker create -v /var/lib/registry --name registry-volume registry:2
+  when: registry_volume_exists|failed
+
 - name : launching docker registry (backend)...
   docker :
     state: started
@@ -31,6 +44,8 @@
     image: 'registry:2'
     ports:
       - '127.0.0.1:5000:5000'
+    volumes_from:
+      - registry-volume
 
 - name : launching docker registry (frontend)...
   docker :
@@ -45,6 +60,4 @@
     volumes:
       - /etc/pki/tls/private:/keys
       - /etc/pki/tls/certs:/certs
-      - {{docker_registry_conf_dir}}/auth:/etc/nginx/conf.d
-      
-      
+      - '{{docker_registry_conf_dir}}/auth:/etc/nginx/conf.d'
