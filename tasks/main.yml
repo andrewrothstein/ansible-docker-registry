@@ -24,7 +24,7 @@
     dest={{docker_registry_conf_dir}}/auth
     owner=root
     group=docker
-    mode=770
+    mode=777
 
 - name: build /etc/docker-registry/auth/nginx.conf
   template: >
@@ -32,7 +32,7 @@
     dest={{docker_registry_conf_dir}}/auth/nginx.conf
     owner=root
     group=docker
-    mode=660
+    mode=666
 
 - name: touch /etc/docker-registry/auth/nginx.htpasswd
   file: >-
@@ -40,7 +40,7 @@
     path={{docker_registry_nginx_htpasswd}}
     owner=root
     group=docker
-    mode=660
+    mode=666
     
 - name: build /etc/docker-registry/auth/nginx.htpasswd
   command: >
