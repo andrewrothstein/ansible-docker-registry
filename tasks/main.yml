@@ -1,36 +1,5 @@
 ---
-- name: mkdir -p /etc/docker-registry/auth
-  file: >
-    state=directory
-    dest={{docker_registry_conf_dir}}/auth
-    owner=root
-    group=root
-
-- name: build /etc/docker-registry/auth/nginx.conf
-  template: >
-    src=nginx.conf.j2
-    dest={{docker_registry_conf_dir}}/auth/nginx.conf
-    owner=root
-    group=root
-    
-- name: create /etc/docker-registry/auth/nginx.htpasswd
-  file: >
-    state=touch
-    path={{docker_registry_conf_dir}}/auth/nginx.htpasswd
-    owner=root
-    group=root
-
-- name: build /etc/docker-registry/auth/nginx.htpasswd
-  command: >
-    docker run
-    --rm
-    --entrypoint htpasswd
-    -v {{docker_registry_conf_dir}}/auth/nginx.htpasswd:{{docker_registry_conf_dir}}/auth/nginx.htpasswd
-    httpd:2.4
-    -b {{docker_registry_conf_dir}}/auth/nginx.htpasswd {{item.uid}} {{item.pwd}}
-  with_items: '{{docker_registry_users}}'
-
-- name : creating registry data container
+- name : creating registry-data container...
   docker:
     state: present
     name: registry-data
@@ -38,18 +7,52 @@
     volumes:
       - /var/lib/registry
 
-- name : launching docker registry (backend)...
+- name : launching registry container...
   docker :
     state: started
     restart_policy: always
     name: registry
     image: '{{docker_registry_container}}'
     ports:
-      - '127.0.0.1:{{docker_registry_http_port}}:5000'
+      - '127.0.0.1:5000:5000'
     volumes_from:
       - registry-data
 
-- name : launching docker registry (frontend)...
+- name: mkdir -p /etc/docker-registry/auth
+  file: >
+    state=directory
+    dest={{docker_registry_conf_dir}}/auth
+    owner=root
+    group=root
+    mode=700
+
+- name: build /etc/docker-registry/auth/nginx.conf
+  template: >
+    src=nginx.conf.j2
+    dest={{docker_registry_conf_dir}}/auth/nginx.conf
+    owner=root
+    group=root
+    mode=600
+
+- name: touch /etc/docker-registry/auth/nginx.htpasswd
+  file: >-
+    state=touch
+    path={{docker_registry_nginx_htpasswd}}
+    owner=root
+    group=root
+    mode=600
+    
+- name: build /etc/docker-registry/auth/nginx.htpasswd
+  command: >
+    docker run
+    --rm
+    --entrypoint htpasswd
+    -v {{docker_registry_nginx_htpasswd}}:{{docker_registry_nginx_htpasswd}}
+    httpd:2.4
+    -b {{docker_registry_nginx_htpasswd}} {{item.uid}} {{item.pwd}}
+  with_items: '{{docker_registry_users}}'
+
+- name : launching registry-frontend container...
   docker :
     state: started
     restart_policy: always

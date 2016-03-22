@@ -1,2 +1,2 @@
 ---
-
+docker_registry_nginx_htpasswd : '{{docker_registry_conf_dir}}/auth/nginx.htpasswd'
