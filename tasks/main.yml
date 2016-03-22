@@ -14,8 +14,11 @@
     group=root
     
 - name: create /etc/docker-registry/auth/nginx.htpasswd
-  command: >
-    touch {{docker_registry_conf_dir}}/auth/nginx.htpasswd
+  file: >
+    state=touch
+    path={{docker_registry_conf_dir}}/auth/nginx.htpasswd
+    owner=root
+    group=root
 
 - name: build /etc/docker-registry/auth/nginx.htpasswd
   command: >
@@ -25,36 +28,35 @@
     -v {{docker_registry_conf_dir}}/auth/nginx.htpasswd:{{docker_registry_conf_dir}}/auth/nginx.htpasswd
     httpd:2.4
     -b {{docker_registry_conf_dir}}/auth/nginx.htpasswd {{item.uid}} {{item.pwd}}
-  with_items: docker_registry_users
+  with_items: '{{docker_registry_users}}'
 
-- name : check if registry volume exists
-  command: docker inspect registry-volume
-  register: registry_volume_exists
-  failed_when: false
-
-- name : create registry volume if it does not exist
-  command: docker create -v /var/lib/registry --name registry-volume registry:2
-  when: registry_volume_exists|failed
+- name : creating registry data container
+  docker:
+    state: present
+    name: registry-data
+    image: '{{docker_registry_container}}'
+    volumes:
+      - /var/lib/registry
 
 - name : launching docker registry (backend)...
   docker :
     state: started
     restart_policy: always
     name: registry
-    image: 'registry:2'
+    image: '{{docker_registry_container}}'
     ports:
-      - '127.0.0.1:5000:5000'
+      - '127.0.0.1:{{docker_registry_http_port}}:5000'
     volumes_from:
-      - registry-volume
+      - registry-data
 
 - name : launching docker registry (frontend)...
   docker :
     state: started
     restart_policy: always
     name: registry-frontend
-    image: 'nginx:1.9'
+    image: '{{docker_registry_frontend_container}}'
     ports:
-      - '5043:443'
+      - '{{docker_registry_https_port}}:443'
     links:
       - 'registry:registry'
     volumes:
