@@ -1,11 +1,29 @@
 ---
-- name : creating registry-data container...
-  docker:
-    state: present
-    name: registry-data
-    image: '{{docker_registry_container}}'
-    volumes:
-      - /var/lib/registry
+- name: mkdir -p /etc/docker-registry/auth
+  file: >
+    state=directory
+    dest={{docker_registry_conf_dir}}/auth
+    owner=root
+    group=docker
+    mode=777
+    
+- name: touch /etc/docker-registry/auth/registry.htpasswd
+  file: >-
+    state=touch
+    path={{docker_registry_registry_htpasswd}}
+    owner=root
+    group=docker
+    mode=666
+
+- name: build /etc/docker-registry/auth/registry.htpasswd
+  command: >
+    docker run
+    --rm
+    --entrypoint htpasswd
+    -v {{docker_registry_registry_htpasswd}}:{{docker_registry_registry_htpasswd}}
+    registry:2
+    -Bb {{docker_registry_registry_htpasswd}} {{item.uid}} {{item.pwd}}
+  with_items: '{{docker_registry_users}}'
 
 - name : launching registry container...
   docker :
@@ -14,55 +32,15 @@
     name: registry
     image: '{{docker_registry_container}}'
     ports:
-      - '127.0.0.1:5000:5000'
-    volumes_from:
-      - registry-data
-
-- name: mkdir -p /etc/docker-registry/auth
-  file: >
-    state=directory
-    dest={{docker_registry_conf_dir}}/auth
-    owner=root
-    group=docker
-    mode=777
-
-- name: build /etc/docker-registry/auth/nginx.conf
-  template: >
-    src=nginx.conf.j2
-    dest={{docker_registry_conf_dir}}/auth/nginx.conf
-    owner=root
-    group=docker
-    mode=666
-
-- name: touch /etc/docker-registry/auth/nginx.htpasswd
-  file: >-
-    state=touch
-    path={{docker_registry_nginx_htpasswd}}
-    owner=root
-    group=docker
-    mode=666
-    
-- name: build /etc/docker-registry/auth/nginx.htpasswd
-  command: >
-    docker run
-    --rm
-    --entrypoint htpasswd
-    -v {{docker_registry_nginx_htpasswd}}:{{docker_registry_nginx_htpasswd}}
-    httpd:2.4
-    -b {{docker_registry_nginx_htpasswd}} {{item.uid}} {{item.pwd}}
-  with_items: '{{docker_registry_users}}'
-
-- name : launching registry-frontend container...
-  docker :
-    state: started
-    restart_policy: always
-    name: registry-frontend
-    image: '{{docker_registry_frontend_container}}'
-    ports:
-      - '{{docker_registry_https_port}}:443'
-    links:
-      - 'registry:registry'
+      - '{{docker_registry_https_port}}:5000'
+    env:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.htpasswd
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/vagrant-ubuntu-trusty-64.crt
+      REGISTRY_HTTP_TLS_KEY: /keys/vagrant-ubuntu-trusty-64.key
     volumes:
+      - /mnt/blade-share/registry:/var/lib/registry
+      - /etc/docker-registry/auth:/auth
       - /etc/pki/tls/private:/keys
       - /etc/pki/tls/certs:/certs
-      - '{{docker_registry_conf_dir}}/auth:/etc/nginx/conf.d'
