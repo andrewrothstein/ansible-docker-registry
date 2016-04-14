@@ -1,6 +1,7 @@
 ---
 docker_registry_https_port : 443
 docker_registry_conf_dir: /etc/docker-registry
+docker_registry_dir: /mnt/blade-share
 
 docker_registry_users:
   - uid: 'arothste'

@@ -37,10 +37,10 @@
       REGISTRY_AUTH: htpasswd
       REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.htpasswd
-      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/vagrant-ubuntu-trusty-64.crt
-      REGISTRY_HTTP_TLS_KEY: /keys/vagrant-ubuntu-trusty-64.key
+      REGISTRY_HTTP_TLS_CERTIFICATE: '/certs/{{inventory_hostname}}.crt'
+      REGISTRY_HTTP_TLS_KEY: '/keys/{{inventory_hostname}}.key'
     volumes:
-      - /mnt/blade-share/registry:/var/lib/registry
+      - '{{docker_registry_dir}}/registry:/var/lib/registry'
       - /etc/docker-registry/auth:/auth
       - /etc/pki/tls/private:/keys
       - /etc/pki/tls/certs:/certs
