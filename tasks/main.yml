@@ -43,8 +43,8 @@
       REGISTRY_AUTH: htpasswd
       REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.htpasswd
-      REGISTRY_HTTP_TLS_CERTIFICATE: '/certs/{{inventory_hostname}}.crt'
-      REGISTRY_HTTP_TLS_KEY: '/keys/{{inventory_hostname}}.key'
+      REGISTRY_HTTP_TLS_CERTIFICATE: '/certs/{{inventory_hostname}}.pem'
+      REGISTRY_HTTP_TLS_KEY: '/keys/{{inventory_hostname}}-key.pem'
     volumes:
       - '{{docker_registry_dir}}/registry:/var/lib/registry'
       - /etc/docker-registry/auth:/auth
