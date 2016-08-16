@@ -10,3 +10,4 @@ docker_registry_users:
     pwd: 'password'
 
 docker_registry_container: 'registry:2'
+docker_registry_http_secret: d61605d6-63eb-11e6-a138-989096e41e7c

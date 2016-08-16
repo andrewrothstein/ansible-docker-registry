@@ -45,6 +45,7 @@
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.htpasswd
       REGISTRY_HTTP_TLS_CERTIFICATE: '/certs/{{inventory_hostname}}.pem'
       REGISTRY_HTTP_TLS_KEY: '/keys/{{inventory_hostname}}-key.pem'
+      REGISTRY_HTTP_SECRET: '{{docker_registry_http_secret}}'
     volumes:
       - '{{docker_registry_dir}}/registry:/var/lib/registry'
       - /etc/docker-registry/auth:/auth
