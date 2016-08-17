@@ -46,6 +46,7 @@
       REGISTRY_HTTP_TLS_CERTIFICATE: '/certs/{{inventory_hostname}}.pem'
       REGISTRY_HTTP_TLS_KEY: '/keys/{{inventory_hostname}}-key.pem'
       REGISTRY_HTTP_SECRET: '{{docker_registry_http_secret}}'
+      REGISTRY_STORAGE_DELETE_ENABLED: true
     volumes:
       - '{{docker_registry_dir}}/registry:/var/lib/registry'
       - /etc/docker-registry/auth:/auth
