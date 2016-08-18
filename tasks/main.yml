@@ -35,7 +35,7 @@
   docker :
     state: started
     restart_policy: always
-    name: registry
+    name: '{{docker_registry_container_name}}'
     image: '{{docker_registry_container}}'
     ports:
       - '{{docker_registry_https_port}}:5000'
@@ -52,3 +52,22 @@
       - /etc/docker-registry/auth:/auth
       - /etc/pki/tls/private:/keys
       - /etc/pki/tls/certs:/certs
+
+- name: launch registry web interface
+  become: yes
+  become_user: root
+  docker:
+    state: started
+    restart_policy: always
+    name: '{{docker_registry_web_container_name}}'
+    image: '{{docker_registry_web_container}}'
+    ports:
+      - '{{docker_registry_web_http_port}}:8080'
+    env:
+      REGISTRY_URL: https://{{docker_registry_container_name}}:5000/v2
+      REGISTRY_TRUST_ANY_SSL: true
+      REGISTRY_BASIC_AUTH: '{{docker_registry_web_userpwd | b64encode}}'
+      REGISTRY_NAME: localhost:5000
+      REGISTRY_READONLY: false
+    links:
+      - '{{docker_registry_container_name}}'
