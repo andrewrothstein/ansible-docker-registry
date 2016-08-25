@@ -61,6 +61,7 @@
     restart_policy: always
     name: '{{docker_registry_web_container_name}}'
     image: '{{docker_registry_web_container}}'
+    expose: 8080
     ports:
       - '{{docker_registry_web_http_port}}:8080'
     env:
