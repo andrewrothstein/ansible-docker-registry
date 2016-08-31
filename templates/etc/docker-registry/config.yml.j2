@@ -1,0 +1,28 @@
+---
+version: 0.1
+auth:
+  htpasswd:
+    realm: Registry Realm
+    path: /auth/registry.htpasswd
+log:
+  level: debug
+http:
+  addr: 0.0.0.0:5000
+  hostname: https://{{inventory_hostname}}
+  tls:
+    certificate: /certs/{{inventory_hostname}}.pem
+    key: /keys/{{inventory_hostname}}-key.pem
+  secret: {{docker_registry_http_secret|to_json}}
+storage:
+  delete:
+    enabled: true
+  s3:
+    accesskey: {{docker_registry_storage_s3_access_key|to_json}}
+    secretkey: {{docker_registry_storage_s3_secret_key|to_json}}
+    region: {{docker_registry_storage_s3_region|to_json}}
+    regionendpoint: {{docker_registry_storage_s3_regionendpoint|to_json}}
+    bucket: {{docker_registry_storage_s3_bucket|to_json}}
+    secure: {{docker_registry_storage_s3_secure|to_json}}
+    v4auth: {{docker_registry_storage_s3_v4auth|to_json}}
+
+    
