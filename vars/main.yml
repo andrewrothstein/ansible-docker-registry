@@ -1,2 +1,2 @@
 ---
-docker_registry_registry_htpasswd : '{{docker_registry_conf_dir}}/auth/registry.htpasswd'
+
