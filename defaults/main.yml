@@ -18,7 +18,3 @@ docker_registry_storage_s3_regionendpoint: '{{inventory_hostname}}:8080'
 docker_registry_storage_s3_secure: false
 docker_registry_storage_s3_v4auth: false
 
-docker_registry_web_container: hyper/docker-registry-web:latest
-docker_registry_web_container_name: registry-web
-docker_registry_web_http_port: 8888
-docker_registry_web_userpwd: arothste:password

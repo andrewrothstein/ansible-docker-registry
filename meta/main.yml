@@ -5,22 +5,25 @@ galaxy_info:
   company: BlackRock
   license:
     - MIT
-  min_ansible_version: 1.2
+  min_ansible_version: 2.0
   platforms:
     - name: EL
       versions:
-        - 7
+        - all
     - name: Fedora
       versions:
-        - 21
+        - all
     - name: Ubuntu
       versions:
-        - trusty
+        - all
 
   galaxy_tags:
-    - development
+    - docker
+    - registry
 
 dependencies:
   - role: andrewrothstein.docker-py
     version: v1.0.1
+  - role: andrewrothstein.htpasswd-deps
+    version: v1.0.0
   
