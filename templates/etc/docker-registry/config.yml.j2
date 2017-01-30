@@ -15,7 +15,7 @@ http:
   secret: {{docker_registry_http_secret|to_json}}
 storage:
   delete:
-    enabled: true
+    enabled: {{docker_registry_delete_mode|bool}}
   s3:
     accesskey: {{docker_registry_storage_s3_access_key|to_json}}
     secretkey: {{docker_registry_storage_s3_secret_key|to_json}}
@@ -24,5 +24,6 @@ storage:
     bucket: {{docker_registry_storage_s3_bucket|to_json}}
     secure: {{docker_registry_storage_s3_secure|to_json}}
     v4auth: {{docker_registry_storage_s3_v4auth|to_json}}
-
-    
+  maintenance:
+    readonly:
+      enabled: {{docker_registry_readonly_mode|bool}}
