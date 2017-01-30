@@ -35,12 +35,13 @@
 - name : launching registry container...
   become: yes
   become_user: root
-  docker :
+  docker_container :
     state: started
     restart_policy: always
     name: '{{docker_registry_container_name}}'
     image: '{{docker_registry_container}}'
-    ports:
+    pull: true
+    published_ports:
       - '{{docker_registry_https_port}}:5000'
     volumes:
       - /etc/docker-registry/config.yml:/etc/docker/registry/config.yml:ro

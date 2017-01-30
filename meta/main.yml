@@ -5,7 +5,7 @@ galaxy_info:
   company: BlackRock
   license:
     - MIT
-  min_ansible_version: 2.0
+  min_ansible_version: 2.2
   platforms:
     - name: EL
       versions:
@@ -23,7 +23,7 @@ galaxy_info:
 
 dependencies:
   - role: andrewrothstein.docker-py
-    version: v1.0.1
+    version: v1.0.5
   - role: andrewrothstein.htpasswd-deps
     version: v1.0.0
   
