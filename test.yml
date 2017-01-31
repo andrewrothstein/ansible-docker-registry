@@ -1,4 +1,6 @@
 ---
 - hosts: all
   roles:
-    - { role: '.' }
+    - role: '{{playbook_dir}}'
+      docker_registry_activate: False
+      docker_registry_web_activate: False

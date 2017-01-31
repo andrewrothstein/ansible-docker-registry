@@ -5,46 +5,36 @@
   with_items:
     - /etc/docker-registry
     - /etc/docker-registry/auth
-  file: >
-    state=directory
-    dest={{item}}
-    group=docker
-    mode=0777
+  file:
+    state: directory
+    dest: '{{item}}'
+    mode: 0700
     
-- name: touch /etc/docker-registry/auth/registry.htpasswd
+- name: add passwds to /etc/docker-registry/auth/registry.htpasswd
   become: yes
   become_user: root
-  file: >-
-    state=touch
-    path=/etc/docker-registry/auth/registry.htpasswd
-    group=docker
-    mode=0666
-
-- name: build /etc/docker-registry/auth/registry.htpasswd
-  become: yes
-  become_user: root
-  command: >
-    docker run
-    --rm
-    --entrypoint htpasswd
-    -v /etc/docker-registry/auth/registry.htpasswd:/etc/docker-registry/auth/registry.htpasswd
-    registry:2
-    -Bb /etc/docker-registry/auth/registry.htpasswd {{item.uid}} {{item.pwd}}
   with_items: '{{docker_registry_users}}'
+  htpasswd:
+    path: /etc/docker-registry/auth/registry.htpasswd
+    mode: 0600
+    name: '{{item.uid}}'
+    password: '{{item.pwd}}'
+    crypt_scheme: bcrypt
 
 - name: templatize...
   become: yes
   become_user: root
   with_items:
     - etc/docker-registry/config.yml
-  template: >-
-    src={{item}}.j2
-    dest=/{{item}}
-    mode=0644
+  template:
+    src: '{{item}}.j2'
+    dest: /{{item}}
+    mode: 0644
   
 - name : launching registry container...
   become: yes
   become_user: root
+  when: docker_registry_activate
   docker_container :
     state: started
     restart_policy: always
@@ -63,6 +53,7 @@
 - name: launch registry web interface
   become: yes
   become_user: root
+  when: docker_registry_web_activate
   docker_container:
     state: started
     restart_policy: always
