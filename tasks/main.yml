@@ -8,7 +8,7 @@
   file:
     state: directory
     dest: '{{item}}'
-    mode: '0700'
+    mode: 0700
     
 - name: add passwds to /etc/docker-registry/auth/registry.htpasswd
   become: yes
@@ -16,9 +16,10 @@
   with_items: '{{docker_registry_users}}'
   htpasswd:
     path: /etc/docker-registry/auth/registry.htpasswd
-    mode: '0600'
+    mode: 0600
     name: '{{item.uid}}'
     password: '{{item.pwd}}'
+    crypt_scheme: bcrypt
 
 - name: templatize...
   become: yes
@@ -28,7 +29,7 @@
   template:
     src: '{{item}}.j2'
     dest: /{{item}}
-    mode: '0644'
+    mode: 0644
   
 - name : launching registry container...
   become: yes

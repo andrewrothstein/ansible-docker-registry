@@ -14,6 +14,8 @@ http:
     key: /keys/{{inventory_hostname}}-key.pem
   secret: {{docker_registry_http_secret|to_json}}
 storage:
+  cache:
+    blobdescriptor: inmemory
   delete:
     enabled: {{docker_registry_delete_mode|bool}}
   s3:
