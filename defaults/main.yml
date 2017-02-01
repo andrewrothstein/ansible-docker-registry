@@ -22,3 +22,7 @@ docker_registry_storage_s3_v4auth: false
 docker_registry_readonly_mode: false
 docker_registry_delete_mode: true
 docker_registry_activate: true
+
+docker_registry_pki_key_suffix: '-key.pem'
+docker_registry_pki_cert_suffix: .pem
+docker_registry_pki_dir: ~/pki
