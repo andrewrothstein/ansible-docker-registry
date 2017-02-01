@@ -10,6 +10,8 @@
     state: directory
     dest: '{{item}}'
     mode: 0700
+
+- include: pki.yml
     
 - name: add passwds to /etc/docker-registry/auth/registry.htpasswd
   become: yes
