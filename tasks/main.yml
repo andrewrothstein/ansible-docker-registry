@@ -3,19 +3,22 @@
   become: yes
   become_user: root
   with_items:
-    - /etc/docker-registry
-    - /etc/docker-registry/auth
+    - '{{docker_registry_conf_dir}}'
+    - '{{docker_registry_conf_dir}}/auth'
+    - '{{docker_registry_conf_dir}}/pki'
   file:
     state: directory
     dest: '{{item}}'
     mode: 0700
-    
+
+- include: pki.yml
+
 - name: add passwds to /etc/docker-registry/auth/registry.htpasswd
   become: yes
   become_user: root
   with_items: '{{docker_registry_users}}'
   htpasswd:
-    path: /etc/docker-registry/auth/registry.htpasswd
+    path: '{{docker_registry_conf_dir}}/auth/registry.htpasswd'
     mode: 0600
     name: '{{item.uid}}'
     password: '{{item.pwd}}'
@@ -25,10 +28,10 @@
   become: yes
   become_user: root
   with_items:
-    - etc/docker-registry/config.yml
+    - config.yml
   template:
     src: '{{item}}.j2'
-    dest: /{{item}}
+    dest: '{{docker_registry_conf_dir}}/{{item}}'
     mode: 0644
   
 - name : launching registry container...
@@ -45,10 +48,9 @@
       - '{{docker_registry_https_port}}:5000'
     volumes:
       - '{{docker_registry_dir}}/registry:/var/lib/registry:rw'
-      - /etc/docker-registry/config.yml:/etc/docker/registry/config.yml:ro
-      - /etc/docker-registry/auth:/auth:ro
-      - /etc/pki/tls/private:/keys:ro
-      - /etc/pki/tls/certs:/certs:ro
+      - '{{docker_registry_conf_dir}}/config.yml:/etc/docker/registry/config.yml:ro'
+      - '{{docker_registry_conf_dir}}/auth:/auth:ro'
+      - '{{docker_registry_conf_dir}}/pki:/pki:ro'
 
 - name: launch registry web interface
   become: yes

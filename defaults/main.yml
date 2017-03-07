@@ -20,3 +20,7 @@ docker_registry_web_container_name: registry-web
 docker_registry_web_http_port: 8888
 docker_registry_web_userpwd: arothste:password
 docker_registry_web_activate: true
+
+docker_registry_pki_key_suffix: '-key.pem'
+docker_registry_pki_cert_suffix: .pem
+docker_registry_pki_dir: ~/pki

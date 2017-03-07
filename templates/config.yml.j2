@@ -10,8 +10,8 @@ http:
   addr: 0.0.0.0:5000
   hostname: https://{{inventory_hostname}}
   tls:
-    certificate: /certs/{{inventory_hostname}}.pem
-    key: /keys/{{inventory_hostname}}-key.pem
+    certificate: /pki/cert.pem
+    key: /pki/key.pem
   secret: {{docker_registry_http_secret|to_json}}
 storage:
   cache:
