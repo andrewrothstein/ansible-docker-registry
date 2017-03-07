@@ -3,3 +3,4 @@
   roles:
     - role: '{{playbook_dir}}'
       docker_registry_activate: False
+      docker_registry_pki_dir: '{{playbook_dir}}'

@@ -4,7 +4,6 @@
   become_user: root
   with_items:
     - {f: '{{docker_registry_pki_cert_src}}', t: cert.pem, m: '0600'}
-    - {f: '{{docker_registry_pki_ca_cert_src}}', t: ca.pem, m: '0600'}
     - {f: '{{docker_registry_pki_key_src}}', t: key.pem, m: '0400'}
   copy:
     src: '{{item.f}}'
