@@ -1,0 +1,11 @@
+---
+- name: copy ssl certs for registry
+  become: yes
+  become_user: root
+  with_items:
+    - {f: '{{docker_registry_ssl_standalone_cert}}', t: cert.pem, m: '0600'}
+    - {f: '{{docker_registry_ssl_standalone_key}}', t: key.pem, m: '0400'}
+  file:
+    state: hard
+    src: '{{item.f}}'
+    dest: '{{docker_registry_conf_dir}}/pki/{{item.t}}'

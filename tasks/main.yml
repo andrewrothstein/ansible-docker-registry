@@ -1,18 +1,27 @@
 ---
-- name: mkdir -p /etc/docker-registry/auth
+- name: make directories
   become: yes
   become_user: root
   with_items:
     - '{{docker_registry_conf_dir}}'
     - '{{docker_registry_conf_dir}}/auth'
     - '{{docker_registry_conf_dir}}/pki'
+    - '{{docker_registry_letsencrypt_dir_on_host}}'
+    - '{{docker_registry_storage_fs_root_directory_on_host}}'
   file:
     state: directory
     dest: '{{item}}'
     mode: 0700
 
-- include_tasks: pki.yml
-    
+- include: pki.yml
+  when: docker_registry_pki_enabled
+
+- include: standalone_ssl.yml
+  when: docker_registry_ssl_standalone_enabled
+
+- include: local_ssl.yml
+  when: docker_registry_ssl_local_standalone_enabled
+
 - name: add passwds to /etc/docker-registry/auth/registry.htpasswd
   become: yes
   become_user: root
@@ -38,7 +47,7 @@
   become: yes
   become_user: root
   when: docker_registry_activate
-  docker_container :
+  docker_container:
     state: started
     restart_policy: always
     name: '{{docker_registry_container_name}}'
@@ -50,4 +59,5 @@
       - '{{docker_registry_conf_dir}}/config.yml:/etc/docker/registry/config.yml:ro'
       - '{{docker_registry_conf_dir}}/auth:/auth:ro'
       - '{{docker_registry_conf_dir}}/pki:/pki:ro'
-
+      - '{{docker_registry_storage_fs_root_directory_on_host}}:{{docker_registry_storage_fs_root_directory}}:rw'
+      - '{{docker_registry_letsencrypt_dir_on_host}}:{{docker_registry_letsencrypt_dir}}:rw'

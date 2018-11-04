@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   author: Andrew Rothstein
+  role_name: docker-registry
   description: Docker registry role
   company: BlackRock
   license:
